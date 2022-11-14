@@ -25,9 +25,9 @@ const slice = createSlice({
   initialState,
   reducers: {
     startLoadingArticles: () => initialState,
-    loadArticles: (state, { payload: { articles, articlesCount } }: PayloadAction<MultipleArticles>) => {
-      state.articles = Some(articles.map((article) => ({ article, isSubmitting: false })));
-      state.articlesCount = articlesCount;
+    loadArticles: (state, { payload }: PayloadAction<MultipleArticles>) => {
+      state.articles = Some(payload?.articles.map((article) => ({ article, isSubmitting: false })));
+      state.articlesCount = payload?.articlesCount;
     },
     startSubmittingFavorite: (state, { payload: index }: PayloadAction<number>) => {
       state.articles = state.articles.map(R.adjust(index, R.assoc('isSubmitting', true)));
