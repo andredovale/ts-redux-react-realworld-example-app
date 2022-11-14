@@ -2,9 +2,12 @@ import { None, Option, Some } from '@hqoss/monads';
 import { onTabChange } from '../Home/Home';
 import create from 'zustand';
 import createContext from 'zustand/context';
+import { useEffect } from 'react';
+import { getTags } from '../../../services/conduit';
 
 type Tags = string[];
-type TagsSlice = { tags: Option<Tags>; populate: (tags: Tags) => void };
+type PopulateTags = (tags: Tags) => void;
+type TagsSlice = { tags: Option<Tags>; populate: PopulateTags };
 
 const createStore = () =>
   create<TagsSlice>((set) => ({
@@ -18,8 +21,19 @@ function TagsProvider({ children }: { children: React.ReactNode }) {
   return <Provider createStore={createStore}>{children}</Provider>;
 }
 
+async function getTagsAndPopulate(populate: PopulateTags) {
+  const { tags } = await getTags();
+
+  populate(tags);
+}
+
 function HomeSidebar() {
-  const { tags } = useStore();
+  const { tags, populate } = useStore();
+
+  useEffect(() => {
+    getTagsAndPopulate(populate);
+  }, []);
+
   return (
     <div className='sidebar'>
       <p>Popular Tags</p>
