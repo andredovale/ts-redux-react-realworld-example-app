@@ -1,4 +1,3 @@
-import { Option } from '@hqoss/monads';
 import { getArticles, getFeed, getTags } from '../../../services/conduit';
 import { store } from '../../../state/store';
 import { useStoreWithInitializer } from '../../../state/storeHooks';
@@ -6,6 +5,7 @@ import { FeedFilters } from '../../../types/article';
 import { ArticlesViewer } from '../../ArticlesViewer/ArticlesViewer';
 import { changePage, loadArticles, startLoadingArticles } from '../../ArticlesViewer/ArticlesViewer.slice';
 import { ContainerPage } from '../../ContainerPage/ContainerPage';
+import HomeSidebar from '../HomeSidebar/HomeSidebar';
 import { changeTab, loadTags, startLoadingTags } from './Home.slice';
 
 export function Home() {
@@ -72,7 +72,7 @@ async function onPageChange(index: number) {
   store.dispatch(loadArticles(multipleArticles));
 }
 
-async function onTabChange(tab: string) {
+export async function onTabChange(tab: string) {
   store.dispatch(changeTab(tab));
   store.dispatch(startLoadingArticles());
 
@@ -89,27 +89,5 @@ async function getFeedOrGlobalArticles(filters: FeedFilters = {}) {
 
   return await (selectedTab === 'Your Feed' ? getFeed : getArticles)(
     !selectedTab.startsWith('#') ? filters : finalFilters
-  );
-}
-
-function HomeSidebar({ tags }: { tags: Option<string[]> }) {
-  return (
-    <div className='sidebar'>
-      <p>Popular Tags</p>
-
-      {tags.match({
-        none: () => <span>Loading tags...</span>,
-        some: (tags) => (
-          <div className='tag-list'>
-            {' '}
-            {tags.map((tag) => (
-              <a key={tag} href='#' className='tag-pill tag-default' onClick={() => onTabChange(`# ${tag}`)}>
-                {tag}
-              </a>
-            ))}{' '}
-          </div>
-        ),
-      })}
-    </div>
   );
 }
