@@ -1,4 +1,4 @@
-import { getArticles, getFeed, getTags } from '../../../services/conduit';
+import { getArticles, getFeed } from '../../../services/conduit';
 import { store } from '../../../state/store';
 import { useStoreWithInitializer } from '../../../state/storeHooks';
 import { FeedFilters } from '../../../types/article';
@@ -6,7 +6,7 @@ import { ArticlesViewer } from '../../ArticlesViewer/ArticlesViewer';
 import { changePage, loadArticles, startLoadingArticles } from '../../ArticlesViewer/ArticlesViewer.slice';
 import { ContainerPage } from '../../ContainerPage/ContainerPage';
 import HomeSidebar from '../HomeSidebar/HomeSidebar';
-import { changeTab, loadTags, startLoadingTags } from './Home.slice';
+import { changeTab } from './Home.slice';
 
 export function Home() {
   const { selectedTab } = useStoreWithInitializer(({ home }) => home, load);
@@ -35,7 +35,6 @@ export function Home() {
 
 async function load() {
   store.dispatch(startLoadingArticles());
-  store.dispatch(startLoadingTags());
 
   if (store.getState().app.user.isSome()) {
     store.dispatch(changeTab('Your Feed'));
@@ -43,9 +42,6 @@ async function load() {
 
   const multipleArticles = await getFeedOrGlobalArticles();
   store.dispatch(loadArticles(multipleArticles));
-
-  const tagsResult = await getTags();
-  store.dispatch(loadTags(tagsResult.tags));
 }
 
 function renderBanner() {
