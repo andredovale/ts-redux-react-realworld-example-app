@@ -9,7 +9,7 @@ import HomeSidebar from '../HomeSidebar/HomeSidebar';
 import { changeTab, loadTags, startLoadingTags } from './Home.slice';
 
 export function Home() {
-  const { tags, selectedTab } = useStoreWithInitializer(({ home }) => home, load);
+  const { selectedTab } = useStoreWithInitializer(({ home }) => home, load);
 
   return (
     <div className='home-page'>
@@ -26,7 +26,7 @@ export function Home() {
         </div>
 
         <div className='col-md-3'>
-          <HomeSidebar tags={tags} />
+          <HomeSidebar />
         </div>
       </ContainerPage>
     </div>

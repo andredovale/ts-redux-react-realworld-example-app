@@ -1,7 +1,25 @@
-import { Option } from '@hqoss/monads';
+import { None, Option, Some } from '@hqoss/monads';
 import { onTabChange } from '../Home/Home';
+import create from 'zustand';
+import createContext from 'zustand/context';
 
-function HomeSidebar({ tags }: { tags: Option<string[]> }) {
+type Tags = string[];
+type TagsSlice = { tags: Option<Tags>; populate: (tags: Tags) => void };
+
+const createStore = () =>
+  create<TagsSlice>((set) => ({
+    tags: None,
+    populate: (tags) => set(() => ({ tags: Some(tags) })),
+  }));
+
+const { Provider, useStore } = createContext<ReturnType<typeof createStore>>();
+
+function TagsProvider({ children }: { children: React.ReactNode }) {
+  return <Provider createStore={createStore}>{children}</Provider>;
+}
+
+function HomeSidebar() {
+  const { tags } = useStore();
   return (
     <div className='sidebar'>
       <p>Popular Tags</p>
@@ -23,4 +41,10 @@ function HomeSidebar({ tags }: { tags: Option<string[]> }) {
   );
 }
 
-export default HomeSidebar;
+export default function HomeSidebarContainer() {
+  return (
+    <TagsProvider>
+      <HomeSidebar />
+    </TagsProvider>
+  );
+}
